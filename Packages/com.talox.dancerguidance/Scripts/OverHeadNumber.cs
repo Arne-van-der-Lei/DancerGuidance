@@ -14,6 +14,9 @@ public class OverHeadNumber : UdonSharpBehaviour
     [UdonSynced]
     public int number;
     public Vector3 offset;
+    public int dancesNeeded;
+    [SerializeField]
+    public TMP_Text nameplate;
     [SerializeField]
     public TMP_Text text;
     [SerializeField]
@@ -22,32 +25,31 @@ public class OverHeadNumber : UdonSharpBehaviour
     private VRCPlayerApi player;
     private bool IsEnabled = false;
     
+    private Color red = new Color(1.0f, 0.0f, 0.0f, 1.0f);
+    private Color green = new Color(0.0f, 1.0f, 0.0f, 1.0f);
+    private Color orange = new Color(1.0f, 0.5f, 0.0f, 1.0f);
+    
     private void Start()
     {
         player = Networking.GetOwner(gameObject);
-        IsEnabled = PlayerData.GetBool(Networking.LocalPlayer, "Talox.DancerGuidance.OverHeadNumber");
-        canvasGroup.alpha = IsEnabled ? 1 : 0;
+        UpdateEnabled();
+        nameplate.text = player.displayName;
     }
 
     public override void OnPlayerDataUpdated(VRCPlayerApi player, PlayerData.Info[] infos)
     {
-        if (player.isLocal)
+        foreach (PlayerData.Info info in infos)
         {
-            foreach (PlayerData.Info info in infos)
+            if (info.Key == "Talox.DancerGuidance.OverHeadNumber")
             {
-                if (info.Key == "Talox.DancerGuidance.OverHeadNumber")
-                {
-                    IsEnabled = PlayerData.GetBool(player, "Talox.DancerGuidance.OverHeadNumber");
-                    canvasGroup.alpha = IsEnabled ? 1 : 0;
-                }
+                UpdateEnabled();
             }
         }
     }
 
     public override void OnPlayerRestored(VRCPlayerApi player)
     {
-        IsEnabled = PlayerData.GetBool(Networking.LocalPlayer, "Talox.DancerGuidance.OverHeadNumber");
-        canvasGroup.alpha = IsEnabled ? 1 : 0;
+        UpdateEnabled();
     }
 
     public void Update()
@@ -58,6 +60,7 @@ public class OverHeadNumber : UdonSharpBehaviour
             return;
         }
         text.text = number.ToString();
+        nameplate.color = number >= dancesNeeded ? green : number > 0 ? orange : red;
         VRCPlayerApi.TrackingData HeadOwner = player.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
         VRCPlayerApi.TrackingData HeadLocalPlayer = Networking.LocalPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
         transform.position = HeadOwner.position + offset;
@@ -78,5 +81,12 @@ public class OverHeadNumber : UdonSharpBehaviour
         
         number++;
         RequestSerialization();
+    }
+    
+    private void UpdateEnabled()
+    {
+        IsEnabled = PlayerData.GetBool(Networking.LocalPlayer, "Talox.DancerGuidance.OverHeadNumber");
+        bool OwnerEnabled = PlayerData.GetBool(player, "Talox.DancerGuidance.OverHeadNumber");
+        canvasGroup.alpha = !OwnerEnabled & IsEnabled ? 1 : 0;
     }
 }
