@@ -15,6 +15,7 @@ public class OverHeadNumber : UdonSharpBehaviour
     public int number;
     public Vector3 offset;
     public int dancesNeeded;
+    public float MaxDistanceForClick = 5.0f;
     [SerializeField]
     public TMP_Text nameplate;
     [SerializeField]
@@ -71,13 +72,14 @@ public class OverHeadNumber : UdonSharpBehaviour
     {
         if (!player.isLocal)
         {
+            if ((transform.position - Networking.LocalPlayer.GetPosition()).magnitude > MaxDistanceForClick) 
+                return;
+            
             SendCustomNetworkEvent(NetworkEventTarget.Owner,nameof(OnClick));
             number++;
-            Debug.Log("SendCustomNetworkEvent");
+            
             return;
         }
-        
-        Debug.Log("OnClick");
         
         number++;
         RequestSerialization();
