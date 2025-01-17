@@ -575,6 +575,7 @@ GameObject:
   - component: {fileID: 8270341550961172179}
   - component: {fileID: 3891491829889135162}
   - component: {fileID: 1385146942152191170}
+  - component: {fileID: 8399060876969888849}
   m_Layer: 0
   m_Name: OverHeadNumber
   m_TagString: Untagged
@@ -757,6 +758,8 @@ MonoBehaviour:
   number: 0
   offset: {x: 0, y: 2, z: 0}
   dancesNeeded: 3
+  MaxDistanceForClick: 5
+  ClickDelay: 60
   nameplate: {fileID: 1171149085717431947}
   text: {fileID: 224274313416267030}
   canvasGroup: {fileID: 1385146942152191170}
@@ -798,3 +801,24 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!65 &8399060876969888849
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7229391620507103235}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 300, y: 300, z: 10}
+  m_Center: {x: 0, y: 0, z: 0}
