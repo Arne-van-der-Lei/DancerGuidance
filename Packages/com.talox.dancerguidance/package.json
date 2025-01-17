@@ -4,11 +4,11 @@
   "version": "0.0.1",
   "unity": "2022.3",
   "description": "Simple Package for testing Automation",
-  "vrchatVersion": "2022.1.1",
+  "vrchatVersion": "2024.4.2p2",
   "author": {
-    "name": "Momo the Monster",
-    "email": "momodmonster@gmail.com",
-    "url": "https://mmmlabs.com"
+    "name": "Talox",
+    "email": "arne@vanderlei.be",
+    "url": "https://arne.vanderlei.be"
   },
   "unityRelease": "22f1"
 }
