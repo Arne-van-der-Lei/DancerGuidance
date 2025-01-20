@@ -9,3 +9,6 @@ This repo was made at the request of multiple people, and with the release of Pe
 3. Add both the enable button prefab to the scene and place it on a location where your dancers can access it
 4. Add the Overhead number to the scene and change any parameters on the udon script to your liking
 
+# How to request a feature
+
+You can poke me on discord here: [discord](https://discord.gg/bJKDe6eEVx)
