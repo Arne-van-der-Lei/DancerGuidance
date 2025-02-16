@@ -15,6 +15,8 @@ public class OverHeadNumber : UdonSharpBehaviour
     public int number;
     [UdonSynced]
     private bool CanClick = true;
+    [UdonSynced]
+    private int uniqueId;
     public Vector3 offset;
     public int dancesNeeded;
     public float MaxDistanceForClick = 5.0f;
@@ -28,6 +30,9 @@ public class OverHeadNumber : UdonSharpBehaviour
     
     private VRCPlayerApi player;
     private bool IsEnabled = false;
+    
+    private bool IsMasterRestored = false;
+    private bool IsLocalRestored = false;
     
     private Color red = new Color(1.0f, 0.0f, 0.0f, 1.0f);
     private Color green = new Color(0.0f, 1.0f, 0.0f, 1.0f);
@@ -53,7 +58,54 @@ public class OverHeadNumber : UdonSharpBehaviour
 
     public override void OnPlayerRestored(VRCPlayerApi player)
     {
+        if(player.isLocal)
+        {
+            IsLocalRestored = true;
+
+            if (IsMasterRestored)
+            {
+                CheckStartTime();
+            }
+        }
+        
+        if (player.isMaster)
+        {
+            if (player.isLocal)
+            {
+                PlayerData.SetLong("Talox.DancerGuidance.OverHeadNumberStartTime", DateTime.Now.Ticks);
+            }
+            else
+            {
+                IsMasterRestored = true;
+                if(IsLocalRestored)
+                    CheckStartTime();
+            }
+        }
+        
         UpdateEnabled();
+    }
+
+    private void CheckStartTime()
+    {
+        long masterStartTime = PlayerData.GetLong(Networking.Master,"Talox.DancerGuidance.OverHeadNumberStartTime");
+        long localStartTime = PlayerData.GetLong(player,"Talox.DancerGuidance.OverHeadNumberStartTime");
+        
+        if (masterStartTime > localStartTime + 36_000_000_000L * 8L)
+        {
+            PlayerData.SetLong("Talox.DancerGuidance.OverHeadNumberStartTime", masterStartTime);
+            number = 0;
+            PlayerData.SetInt("Talox.DancerGuidance.OverHeadNumberCount",0);
+        }
+        else
+        {
+            number = PlayerData.GetInt(player,"Talox.DancerGuidance.OverHeadNumberCount");
+        }
+    }
+    
+    public override void OnDeserialization()
+    {
+        text.text = number.ToString();
+        nameplate.color = number >= dancesNeeded ? green : number > 0 ? orange : red;
     }
 
     public void Update()
@@ -63,8 +115,6 @@ public class OverHeadNumber : UdonSharpBehaviour
             text.text = "";
             return;
         }
-        text.text = number.ToString();
-        nameplate.color = number >= dancesNeeded ? green : number > 0 ? orange : red;
         VRCPlayerApi.TrackingData HeadOwner = player.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
         VRCPlayerApi.TrackingData HeadLocalPlayer = Networking.LocalPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
         transform.position = HeadOwner.position + offset;
@@ -83,12 +133,17 @@ public class OverHeadNumber : UdonSharpBehaviour
             
             SendCustomNetworkEvent(NetworkEventTarget.Owner,nameof(OnClick));
             number++;
+            text.text = number.ToString();
+            nameplate.color = number >= dancesNeeded ? green : number > 0 ? orange : red;
+            PlayerData.SetInt("Talox.DancerGuidance.OverHeadNumberCount", number);
             CanClick = false;
             return;
         }
         
         CanClick = false;
         number++;
+        text.text = number.ToString();
+        nameplate.color = number >= dancesNeeded ? green : number > 0 ? orange : red;
         RequestSerialization();
         SendCustomEventDelayedSeconds(nameof(OnClickEnd),ClickDelay);
     }
