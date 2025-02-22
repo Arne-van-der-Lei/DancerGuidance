@@ -756,7 +756,7 @@ MonoBehaviour:
     SerializationNodes: []
   _udonSharpBackingUdonBehaviour: {fileID: 3891491829889135162}
   number: 0
-  offset: {x: 0, y: 2, z: 0}
+  offset: {x: 0, y: 1, z: 0}
   dancesNeeded: 3
   MaxDistanceForClick: 5
   ClickDelay: 60

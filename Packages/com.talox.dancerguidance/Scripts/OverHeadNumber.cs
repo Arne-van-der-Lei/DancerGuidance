@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Management.Instrumentation;
 using TMPro;
 using UdonSharp;
 using UnityEngine;
@@ -21,6 +22,7 @@ public class OverHeadNumber : UdonSharpBehaviour
     public int dancesNeeded;
     public float MaxDistanceForClick = 5.0f;
     public float ClickDelay = 60.0f;
+    public float keepAlive = 8f;
     [SerializeField]
     public TMP_Text nameplate;
     [SerializeField]
@@ -58,47 +60,56 @@ public class OverHeadNumber : UdonSharpBehaviour
 
     public override void OnPlayerRestored(VRCPlayerApi player)
     {
-        if(player.isLocal)
-        {
-            IsLocalRestored = true;
-
-            if (IsMasterRestored)
-            {
-                CheckStartTime();
-            }
-        }
-        
-        if (player.isMaster)
+        if (this.player.isLocal)
         {
             if (player.isLocal)
             {
-                PlayerData.SetLong("Talox.DancerGuidance.OverHeadNumberStartTime", DateTime.Now.Ticks);
-            }
-            else
-            {
-                IsMasterRestored = true;
-                if(IsLocalRestored)
+                IsLocalRestored = true;
+
+                if (IsMasterRestored)
+                {
                     CheckStartTime();
+                }
+            }
+
+            if (player.isMaster)
+            {
+                if (player.isLocal)
+                {
+                    PlayerData.SetLong("Talox.DancerGuidance.OverHeadNumberStartTime", DateTime.Now.Ticks);
+                }
+                else
+                {
+                    IsMasterRestored = true;
+                    if (IsLocalRestored)
+                        CheckStartTime();
+                }
             }
         }
-        
+
         UpdateEnabled();
     }
 
     private void CheckStartTime()
     {
-        long masterStartTime = PlayerData.GetLong(Networking.Master,"Talox.DancerGuidance.OverHeadNumberStartTime");
-        long localStartTime = PlayerData.GetLong(player,"Talox.DancerGuidance.OverHeadNumberStartTime");
+        DateTime masterStartTime = new DateTime( PlayerData.GetLong(Networking.Master,"Talox.DancerGuidance.OverHeadNumberStartTime"));
+        DateTime localStartTime = new DateTime( PlayerData.GetLong(player,"Talox.DancerGuidance.OverHeadNumberStartTime"));
         
-        if (masterStartTime > localStartTime + 36_000_000_000L * 8L)
+        Debug.Log($"MasterStartTime: {masterStartTime} LocalStartTime: {localStartTime} Diff: {masterStartTime - localStartTime} 8 Hours: { TimeSpan.FromHours(keepAlive)}");
+        
+        if (masterStartTime - (localStartTime + TimeSpan.FromHours(keepAlive)) > TimeSpan.Zero)
         {
-            PlayerData.SetLong("Talox.DancerGuidance.OverHeadNumberStartTime", masterStartTime);
+            PlayerData.SetLong("Talox.DancerGuidance.OverHeadNumberStartTime", masterStartTime.Ticks);
             number = 0;
             PlayerData.SetInt("Talox.DancerGuidance.OverHeadNumberCount",0);
+            RequestSerialization();
+            Debug.Log($"Number: {number} set to 0");
         }
         else
         {
             number = PlayerData.GetInt(player,"Talox.DancerGuidance.OverHeadNumberCount");
+            RequestSerialization();
+            Debug.Log($"Number: {number}");
         }
     }
     
@@ -135,7 +146,6 @@ public class OverHeadNumber : UdonSharpBehaviour
             number++;
             text.text = number.ToString();
             nameplate.color = number >= dancesNeeded ? green : number > 0 ? orange : red;
-            PlayerData.SetInt("Talox.DancerGuidance.OverHeadNumberCount", number);
             CanClick = false;
             return;
         }
@@ -144,6 +154,7 @@ public class OverHeadNumber : UdonSharpBehaviour
         number++;
         text.text = number.ToString();
         nameplate.color = number >= dancesNeeded ? green : number > 0 ? orange : red;
+        PlayerData.SetInt("Talox.DancerGuidance.OverHeadNumberCount", number);
         RequestSerialization();
         SendCustomEventDelayedSeconds(nameof(OnClickEnd),ClickDelay);
     }
