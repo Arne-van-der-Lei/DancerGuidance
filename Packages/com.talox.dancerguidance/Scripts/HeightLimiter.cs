@@ -15,6 +15,9 @@ public class HeightLimiter : UdonSharpBehaviour
     [SerializeField]
     private TMP_Text text;
     
+    public float MaxHeight = 2;
+    public float MinHeight = 1.6f;
+    
     private Color OnColor = new Color(0.0f, 1.0f, 0.0f, 1.0f);
     private Color OffColor = new Color(1.0f, 0.0f, 0.0f, 1.0f);
     private string OnMessage = "Height Limit: On";
@@ -26,8 +29,8 @@ public class HeightLimiter : UdonSharpBehaviour
     {
         VRCPlayerApi player = Networking.LocalPlayer;
         
-        player.SetAvatarEyeHeightMaximumByMeters(2);
-        player.SetAvatarEyeHeightMinimumByMeters(1.6f);
+        player.SetAvatarEyeHeightMaximumByMeters(MaxHeight);
+        player.SetAvatarEyeHeightMinimumByMeters(MinHeight);
         image.color = OnColor;
         text.text = OnMessage;
     }
@@ -51,8 +54,9 @@ public class HeightLimiter : UdonSharpBehaviour
                     }
                     else
                     {
-                        player.SetAvatarEyeHeightMaximumByMeters(2);
-                        player.SetAvatarEyeHeightMinimumByMeters(1.6f);
+                        player.SetAvatarEyeHeightMaximumByMeters(MaxHeight);
+                        player.SetAvatarEyeHeightMinimumByMeters(MinHeight);
+                        player.SetAvatarEyeHeightByMeters(Mathf.Clamp(player.GetAvatarEyeHeightAsMeters(), MinHeight, MaxHeight));
                         image.color = OnColor;
                         text.text = OnMessage;
                     }
@@ -60,7 +64,38 @@ public class HeightLimiter : UdonSharpBehaviour
             }
         }
     }
-    
+
+    public override void OnPlayerRestored(VRCPlayerApi player)
+    {
+        if(player.isLocal)
+        {
+            if (!PlayerData.HasKey(player, "Talox.DancerGuidance.HeightLimit"))
+            {
+                PlayerData.SetBool("Talox.DancerGuidance.HeightLimit", false);
+            }
+            else
+            {
+                IsEnabled = PlayerData.GetBool(player, "Talox.DancerGuidance.HeightLimit");
+                
+                if(IsEnabled)
+                {
+                    player.SetAvatarEyeHeightMaximumByMeters(100);
+                    player.SetAvatarEyeHeightMinimumByMeters(0);
+                    image.color = OffColor;
+                    text.text = OffMessage;
+                }
+                else
+                {
+                    player.SetAvatarEyeHeightMaximumByMeters(MaxHeight);
+                    player.SetAvatarEyeHeightMinimumByMeters(MinHeight);
+                    player.SetAvatarEyeHeightByMeters(Mathf.Clamp(player.GetAvatarEyeHeightAsMeters(), MinHeight, MaxHeight));
+                    image.color = OnColor;
+                    text.text = OnMessage;
+                }
+            }
+        }
+    }
+
     public void OnClick()
     {
         PlayerData.SetBool("Talox.DancerGuidance.HeightLimit", !IsEnabled);
