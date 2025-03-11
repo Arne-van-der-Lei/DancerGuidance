@@ -72,6 +72,11 @@ public class HeightLimiter : UdonSharpBehaviour
             if (!PlayerData.HasKey(player, "Talox.DancerGuidance.HeightLimit"))
             {
                 PlayerData.SetBool("Talox.DancerGuidance.HeightLimit", false);
+                player.SetAvatarEyeHeightMaximumByMeters(MaxHeight);
+                player.SetAvatarEyeHeightMinimumByMeters(MinHeight);
+                player.SetAvatarEyeHeightByMeters(Mathf.Clamp(player.GetAvatarEyeHeightAsMeters(), MinHeight, MaxHeight));
+                image.color = OnColor;
+                text.text = OnMessage;
             }
             else
             {
