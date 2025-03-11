@@ -126,6 +126,7 @@ public class OverHeadNumber : UdonSharpBehaviour
             text.text = "";
             return;
         }
+        
         VRCPlayerApi.TrackingData HeadOwner = player.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
         VRCPlayerApi.TrackingData HeadLocalPlayer = Networking.LocalPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
         transform.position = HeadOwner.position + offset;
@@ -170,5 +171,7 @@ public class OverHeadNumber : UdonSharpBehaviour
         IsEnabled = PlayerData.GetBool(Networking.LocalPlayer, "Talox.DancerGuidance.OverHeadNumber");
         bool OwnerEnabled = PlayerData.GetBool(player, "Talox.DancerGuidance.OverHeadNumber");
         canvasGroup.alpha = !OwnerEnabled & IsEnabled ? 1 : 0;
+        text.text = number.ToString();
+        nameplate.color = number >= dancesNeeded ? green : number > 0 ? orange : red;
     }
 }
