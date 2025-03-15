@@ -5,6 +5,7 @@ on:
     branches: ['main']
     paths:
       - Packages/com.talox.dancerguidance/package.json
+      - Packages/com.talox.sdfui/package.json
 
 jobs:
 
