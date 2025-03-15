@@ -1,7 +1,7 @@
 {
   "name": "com.talox.sdfui",
   "displayName": "SDF UI",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "unity": "2022.3",
   "description": "SDF ui for vrchat",
   "vrchatVersion": "2024.4.2p2",
