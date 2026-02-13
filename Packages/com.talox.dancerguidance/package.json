@@ -1,9 +1,9 @@
 {
   "name": "com.talox.dancerguidance",
   "displayName": "Dancer guidance",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "unity": "2022.3",
-  "description": "Simple Package for testing Automation",
+  "description": "cookies",
   "vrchatVersion": "2024.4.2p2",
   "author": {
     "name": "Talox",

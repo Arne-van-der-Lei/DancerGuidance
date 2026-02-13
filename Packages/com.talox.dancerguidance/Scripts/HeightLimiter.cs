@@ -28,7 +28,6 @@ public class HeightLimiter : UdonSharpBehaviour
     public void Start()
     {
         VRCPlayerApi player = Networking.LocalPlayer;
-        
         player.SetAvatarEyeHeightMaximumByMeters(MaxHeight);
         player.SetAvatarEyeHeightMinimumByMeters(MinHeight);
         image.color = OnColor;
