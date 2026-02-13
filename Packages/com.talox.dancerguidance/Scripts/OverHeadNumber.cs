@@ -124,7 +124,10 @@ public class OverHeadNumber : UdonSharpBehaviour
         VRCPlayerApi.TrackingData HeadOwner = player.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
         VRCPlayerApi.TrackingData HeadLocalPlayer = Networking.LocalPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
         transform.position = HeadOwner.position + offset;
-        transform.rotation = Quaternion.LookRotation(-HeadLocalPlayer.position + transform.position, Vector3.up);
+        Vector3 lookDirection = -HeadLocalPlayer.position + transform.position;
+        lookDirection.y = 0; // Keep the text upright by ignoring vertical rotation
+        lookDirection.Normalize();
+        transform.rotation = Quaternion.LookRotation(lookDirection, Vector3.up);
         
         if (!IsEnabled)
         {
