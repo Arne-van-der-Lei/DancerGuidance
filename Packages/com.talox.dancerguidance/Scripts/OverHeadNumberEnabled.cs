@@ -32,6 +32,15 @@ public class OverHeadNumberEnabled : UdonSharpBehaviour
         }
     }
 
+    public override void OnPlayerRestored(VRCPlayerApi player)
+    {
+        if (player.isLocal)
+        {
+            IsEnabled = PlayerData.GetBool(player, "Talox.DancerGuidance.OverHeadNumber");
+            image.color = IsEnabled ? OnColor : OffColor;
+        }
+    }
+
     public void OnClick()
     {
         PlayerData.SetBool("Talox.DancerGuidance.OverHeadNumber", !IsEnabled);

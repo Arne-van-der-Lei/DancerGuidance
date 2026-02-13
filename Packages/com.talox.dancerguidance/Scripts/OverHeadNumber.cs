@@ -121,16 +121,15 @@ public class OverHeadNumber : UdonSharpBehaviour
 
     public void Update()
     {
-        if (!IsEnabled)
-        {
-            text.text = "";
-            return;
-        }
-        
         VRCPlayerApi.TrackingData HeadOwner = player.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
         VRCPlayerApi.TrackingData HeadLocalPlayer = Networking.LocalPlayer.GetTrackingData(VRCPlayerApi.TrackingDataType.Head);
         transform.position = HeadOwner.position + offset;
         transform.rotation = Quaternion.LookRotation(-HeadLocalPlayer.position + transform.position, Vector3.up);
+        
+        if (!IsEnabled)
+        {
+            text.text = "";
+        }
     }
     
     public void OnClick()
