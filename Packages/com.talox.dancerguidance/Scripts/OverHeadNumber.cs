@@ -200,8 +200,8 @@ public class OverHeadNumber : UdonSharpBehaviour
         IsEnabled = PlayerData.GetBool(Networking.LocalPlayer, "Talox.DancerGuidance.OverHeadNumber");
         bool OwnerEnabled = PlayerData.GetBool(player, "Talox.DancerGuidance.OverHeadNumber");
         canvasGroup.alpha = !OwnerEnabled & IsEnabled ? 1 : 0;
-        canvasGroup.interactable = OwnerEnabled & IsEnabled;
-        canvasGroup.blocksRaycasts = OwnerEnabled & IsEnabled;
+        canvasGroup.interactable = !OwnerEnabled & IsEnabled;
+        canvasGroup.blocksRaycasts = !OwnerEnabled & IsEnabled;
     }
 
     private void SetPreference()
